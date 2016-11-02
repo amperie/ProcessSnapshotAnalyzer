@@ -2,6 +2,7 @@
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports WinControls.ListView
+Imports System.Text.RegularExpressions
 
 Public Class MethodNode
     Public Property methodType As String
@@ -24,8 +25,8 @@ Public Class MethodNode
     Private IDCounter As Integer = 1
 
     Public Shared Function CompareByTotalTime(Left As MethodNode, right As MethodNode) As Integer
-        If Left.timeSpentInMilliSec < right.timeSpentInMilliSec Then Return -1
-        If Left.timeSpentInMilliSec > right.timeSpentInMilliSec Then Return 1
+        If Left.timeSpentInMilliSec < right.timeSpentInMilliSec Then Return 1
+        If Left.timeSpentInMilliSec > right.timeSpentInMilliSec Then Return -1
         Return 0
     End Function
 
@@ -165,8 +166,13 @@ Public Class ProcessSnapshot
 
     Private Sub BuildMethodDictionary()
         MethodDictionary = New Dictionary(Of String, List(Of MethodNode))
-
+        Dim key As String
         For Each node As MethodNode In Roots
+            key = GenerateClassMethodName(node)
+            If Not MethodDictionary.ContainsKey(key) Then
+                MethodDictionary.Add(key, New List(Of MethodNode))
+            End If
+            MethodDictionary(key).Add(node)
             BuildMethodDictionaryInternal(node)
         Next
 
@@ -218,13 +224,14 @@ Public Class ProcessSnapshot
         treeViewNode.SubItems.Add(currentMethodNode.selfTime)
         treeViewNode.SubItems.Add(currentMethodNode.timeSpentInMilliSec)
         treeViewNode.SubItems.Add(currentMethodNode.ID)
+        currentMethodNode.AssociatedTreeViewNode = treeViewNode
 
         If Not IsNothing(currentMethodNode.children) Then
             For Each childNode In currentMethodNode.children
                 Dim tmpTreeViewNode As TreeListNode
                 tmpTreeViewNode = GenerateTreeViewNode(New TreeListNode(), childNode)
                 treeViewNode.Nodes.Add(tmpTreeViewNode)
-                childNode.AssociatedTreeViewNode = tmpTreeViewNode
+                'childNode.AssociatedTreeViewNode = tmpTreeViewNode
             Next
         End If
         Return treeViewNode
@@ -248,6 +255,18 @@ Public Class ProcessSnapshot
         Else
             Return New List(Of MethodNode)
         End If
+    End Function
+
+    Public Function FindMethodNodesRegex(ClassMethodRegex As String) As List(Of MethodNode)
+        Dim retVal As New List(Of MethodNode)
+        Dim match As Match
+        For Each key In MethodDictionary.Keys
+            match = Regex.Match(key, "@" + ClassMethodRegex)
+            If match.Success Then
+                retVal.AddRange(MethodDictionary(key))
+            End If
+        Next
+        Return retVal
     End Function
 
     Public Function FindMethodNodes(className As String, methodName As String) As List(Of MethodNode)

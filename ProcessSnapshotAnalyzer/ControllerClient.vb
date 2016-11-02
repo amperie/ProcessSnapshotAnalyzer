@@ -20,25 +20,59 @@ Public Class ControllerClient
         httpHandler.CookieContainer = cookies
         httpC = New HttpClient(httpHandler)
         httpC.DefaultRequestHeaders.Add("Authorization", "Basic " + Encode64(Controller.User + "@" + Controller.AccountName + ":" + Controller.Pass))
+        Controller.URL = Controller.URL.TrimEnd("/")
         Authenticate()
     End Sub
 
-    Public Sub Authenticate()
-        Dim authURI As Uri = New Uri(Controller.URL + "controller/auth?action=login")
-        Dim httpReq As New Http.HttpRequestMessage()
-        httpReq.Method = Http.HttpMethod.Get
-        httpReq.RequestUri = authURI
-        httpReq.Headers.Add("Accept", "*/*")
+    Public Function IsAuthenticated() As Boolean
+        Dim httpResp As HttpResponseMessage
+        Try
+            Dim authURI As Uri = New Uri(Controller.URL + "/controller/restui/notificationUiService/notifications")
+            Dim httpReq As New Http.HttpRequestMessage()
+            httpReq.Method = Http.HttpMethod.Get
+            httpReq.RequestUri = authURI
+            httpReq.Headers.Add("Accept", "*/*")
 
-        Dim httpResp As HttpResponseMessage = httpC.SendAsync(httpReq).Result
-        JSESSIONID_cookie = cookies.GetCookies(authURI).Item("JSESSIONID").Value
-        'XCSRFTOKEN_cookie = cookies.GetCookies(authURI).Item("X-CSRF-TOKEN").Value
+            httpResp = httpC.SendAsync(httpReq).Result
+            JSESSIONID_cookie = cookies.GetCookies(authURI).Item("JSESSIONID").Value
+            If httpResp.StatusCode = System.Net.HttpStatusCode.OK Then
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+    Public Sub Authenticate()
+        Try
+            If Not IsAuthenticated() Then
+                Dim authURI As Uri = New Uri(Controller.URL + "/controller/auth?action=login")
+                Dim httpReq As New Http.HttpRequestMessage()
+                httpReq.Method = Http.HttpMethod.Get
+                httpReq.RequestUri = authURI
+                httpReq.Headers.Add("Accept", "*/*")
+
+                Dim httpResp As HttpResponseMessage = httpC.SendAsync(httpReq).Result
+                JSESSIONID_cookie = cookies.GetCookies(authURI).Item("JSESSIONID").Value
+                If Not IsAuthenticated() Then Throw New Exception("Wrong Credentials?")
+            End If
+        Catch ex As Exception
+            If IsNothing(ex.InnerException) Then
+                Throw ex
+            Else
+                Throw ex.InnerException
+            End If
+        End Try
 
     End Sub
 
     Public Function GetProcessSnapshot(snapshot As ProcessSnapshotDescriptor) As ProcessSnapshot
 
-        Dim reqURL As String = Controller.URL + "restui/snapshot/getProcessCallGraphRoot"
+        If Not IsAuthenticated() Then Authenticate()
+        Dim reqURL As String = Controller.URL + "/restui/snapshot/getProcessCallGraphRoot"
         reqURL += "?processSnapshotGUID=" + snapshot.requestGUID
         reqURL += "&timeRange=Custom_Time_Range.BETWEEN_TIMES."
         reqURL += snapshot.serverStartTime.ToString() + "."
@@ -60,12 +94,14 @@ Public Class ControllerClient
     End Function
 
     Private Function GetProcessSnapshotListAsJSON(criteria As ProcessSnapshotSearchCriteria) As String
-        Dim ReqURL As String = Controller.URL + "controller/restui/snapshot/getProcessSnapshots"
+        If Not IsAuthenticated() Then Authenticate()
+        Dim ReqURL As String = Controller.URL + "/controller/restui/snapshot/getProcessSnapshots"
         Return PostUrlAsString(ReqURL, criteria.toJSON, "application/json")
     End Function
 
     Private Function GetUrlAsString(URL As String, AcceptType As String) As String
 
+        If Not IsAuthenticated() Then Authenticate()
         Dim httpReq As New Http.HttpRequestMessage()
         httpReq.Method = Http.HttpMethod.Get
         httpReq.RequestUri = New Uri(URL)
@@ -79,6 +115,7 @@ Public Class ControllerClient
 
     Private Function GetUrlAsString(URL As String) As String
 
+        If Not IsAuthenticated() Then Authenticate()
         Dim httpResp As HttpResponseMessage
         httpResp = httpC.GetAsync(URL).Result
 
@@ -88,11 +125,17 @@ Public Class ControllerClient
 
     Private Function PostUrlAsString(URL As String, data As String, Optional ContentType As String = "application/json") As String
 
+        If Not IsAuthenticated() Then Authenticate()
         Dim httpResp As HttpResponseMessage
         Dim PostData As New StringContent(data)
         PostData.Headers.ContentType = New MediaTypeHeaderValue(ContentType)
         httpResp = httpC.PostAsync(URL, PostData).Result
-
+        If httpResp.StatusCode = 401 Then
+            Throw New Exception("Authentication Error - wrong username/password?")
+        End If
+        If httpResp.StatusCode <> 200 Then
+            Throw New Exception("Bad status code on HTTP request: " + httpResp.StatusCode.ToString())
+        End If
         Return (httpResp.Content.ReadAsStringAsync().Result)
 
     End Function

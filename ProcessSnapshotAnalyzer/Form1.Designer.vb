@@ -47,6 +47,7 @@ Partial Class Form1
         Me.Label4 = New System.Windows.Forms.Label()
         Me.tabMain = New System.Windows.Forms.TabControl()
         Me.tabMethodGraph = New System.Windows.Forms.TabPage()
+        Me.chkRegex = New System.Windows.Forms.CheckBox()
         Me.tabSnapshotManager = New System.Windows.Forms.TabPage()
         Me.txtExeTime = New System.Windows.Forms.TextBox()
         Me.Label10 = New System.Windows.Forms.Label()
@@ -81,6 +82,8 @@ Partial Class Form1
         Me.txtAccountName = New System.Windows.Forms.TextBox()
         Me.txtUsername = New System.Windows.Forms.TextBox()
         Me.txtPassword = New System.Windows.Forms.TextBox()
+        Me.lblConnected = New System.Windows.Forms.LinkLabel()
+        Me.txtSnapSummary = New System.Windows.Forms.TextBox()
         Me.tabMain.SuspendLayout()
         Me.tabMethodGraph.SuspendLayout()
         Me.tabSnapshotManager.SuspendLayout()
@@ -93,6 +96,7 @@ Partial Class Form1
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstMethods.Columns.AddRange(New WinControls.ListView.ContainerColumnHeader() {Me.className, Me.methodName, Me.SelfTime, Me.TotalTime, Me.ID})
+        Me.lstMethods.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.lstMethods.Location = New System.Drawing.Point(3, 6)
         Me.lstMethods.Name = "lstMethods"
         Me.lstMethods.Size = New System.Drawing.Size(954, 537)
@@ -142,7 +146,7 @@ Partial Class Form1
         '
         Me.txtSearchMethod.Location = New System.Drawing.Point(6, 556)
         Me.txtSearchMethod.Name = "txtSearchMethod"
-        Me.txtSearchMethod.Size = New System.Drawing.Size(624, 20)
+        Me.txtSearchMethod.Size = New System.Drawing.Size(468, 20)
         Me.txtSearchMethod.TabIndex = 4
         Me.txtSearchMethod.Text = "lib::logCalEvent"
         '
@@ -280,6 +284,8 @@ Partial Class Form1
         '
         'tabMethodGraph
         '
+        Me.tabMethodGraph.Controls.Add(Me.txtSnapSummary)
+        Me.tabMethodGraph.Controls.Add(Me.chkRegex)
         Me.tabMethodGraph.Controls.Add(Me.Label4)
         Me.tabMethodGraph.Controls.Add(Me.Label3)
         Me.tabMethodGraph.Controls.Add(Me.Label2)
@@ -304,6 +310,16 @@ Partial Class Form1
         Me.tabMethodGraph.TabIndex = 0
         Me.tabMethodGraph.Text = "Method Graph"
         Me.tabMethodGraph.UseVisualStyleBackColor = True
+        '
+        'chkRegex
+        '
+        Me.chkRegex.AutoSize = True
+        Me.chkRegex.Location = New System.Drawing.Point(480, 556)
+        Me.chkRegex.Name = "chkRegex"
+        Me.chkRegex.Size = New System.Drawing.Size(57, 17)
+        Me.chkRegex.TabIndex = 20
+        Me.chkRegex.Text = "Regex"
+        Me.chkRegex.UseVisualStyleBackColor = True
         '
         'tabSnapshotManager
         '
@@ -450,6 +466,7 @@ Partial Class Form1
         Me.lstLoadedSnaps.Columns.AddRange(New WinControls.ListView.ContainerColumnHeader() {Me.ContainerColumnHeader5, Me.ContainerColumnHeader6, Me.ContainerColumnHeader7, Me.ContainerColumnHeader8})
         Me.lstLoadedSnaps.DefaultImageIndex = -1
         Me.lstLoadedSnaps.DefaultSelectedImageIndex = -1
+        Me.lstLoadedSnaps.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.lstLoadedSnaps.Location = New System.Drawing.Point(6, 382)
         Me.lstLoadedSnaps.MultiSelect = True
         Me.lstLoadedSnaps.Name = "lstLoadedSnaps"
@@ -491,6 +508,7 @@ Partial Class Form1
         Me.lstSnapshots.Columns.AddRange(New WinControls.ListView.ContainerColumnHeader() {Me.ContainerColumnHeader1, Me.ContainerColumnHeader2, Me.ContainerColumnHeader3, Me.ContainerColumnHeader4})
         Me.lstSnapshots.DefaultImageIndex = -1
         Me.lstSnapshots.DefaultSelectedImageIndex = -1
+        Me.lstSnapshots.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.lstSnapshots.Location = New System.Drawing.Point(6, 6)
         Me.lstSnapshots.MultiSelect = True
         Me.lstSnapshots.Name = "lstSnapshots"
@@ -600,11 +618,30 @@ Partial Class Form1
         Me.txtPassword.TabIndex = 3
         Me.txtPassword.UseSystemPasswordChar = True
         '
+        'lblConnected
+        '
+        Me.lblConnected.AutoSize = True
+        Me.lblConnected.Location = New System.Drawing.Point(340, 14)
+        Me.lblConnected.Name = "lblConnected"
+        Me.lblConnected.Size = New System.Drawing.Size(79, 13)
+        Me.lblConnected.TabIndex = 27
+        Me.lblConnected.TabStop = True
+        Me.lblConnected.Text = "Not Connected"
+        '
+        'txtSnapSummary
+        '
+        Me.txtSnapSummary.Location = New System.Drawing.Point(817, 702)
+        Me.txtSnapSummary.Multiline = True
+        Me.txtSnapSummary.Name = "txtSnapSummary"
+        Me.txtSnapSummary.Size = New System.Drawing.Size(137, 133)
+        Me.txtSnapSummary.TabIndex = 21
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(979, 876)
+        Me.Controls.Add(Me.lblConnected)
         Me.Controls.Add(Me.tabMain)
         Me.Name = "Form1"
         Me.Text = "Snapshot Analyzer"
@@ -616,6 +653,7 @@ Partial Class Form1
         Me.tabSettings.ResumeLayout(False)
         Me.tabSettings.PerformLayout()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
@@ -677,4 +715,7 @@ Partial Class Form1
     Friend WithEvents txtExeTime As TextBox
     Friend WithEvents Label10 As Label
     Friend WithEvents btnAuthenticate As Button
+    Friend WithEvents lblConnected As LinkLabel
+    Friend WithEvents chkRegex As CheckBox
+    Friend WithEvents txtSnapSummary As TextBox
 End Class

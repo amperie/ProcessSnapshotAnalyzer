@@ -11,13 +11,21 @@ Public Class SnapshotManager
     Private AnalysisSnapshots As New ProcessSnapshotList()
 
     Public Sub New(ControllerInfo As ControllerInfo)
-        Authenticate(ControllerInfo)
+        cInfo = ControllerInfo
     End Sub
 
-    Public Sub Authenticate(ControllerInfo As ControllerInfo)
+    Public Sub ConnectToController(ControllerInfo As ControllerInfo)
         cInfo = ControllerInfo
+        ConnectToController()
+    End Sub
+
+    Public Sub ConnectToController()
         cClient = New ControllerClient(cInfo)
     End Sub
+
+    Public Function IsAuthenticated() As Boolean
+        Return cClient.IsAuthenticated()
+    End Function
 
     Public Function RetrieveSnapshotList(criteria As ProcessSnapshotSearchCriteria) As ProcessSnapshotList
         LastSearch = cClient.GetProcessSnapshotList(criteria)
@@ -72,6 +80,17 @@ Public Class SnapshotManager
         Next
     End Sub
 
+    Public Function SummarizeSnapshotsStatistics() As SnapshotsStatistics
+        Dim retVal As New SnapshotsStatistics
+        retVal.NumberOfSnapshots = 0
+        retVal.TotalExeTime = 0
+        For Each snap As ProcessSnapshotDescriptor In AnalysisSnapshots.results
+            retVal.NumberOfSnapshots += 1
+            retVal.TotalExeTime += snap.timeTakenInMilliSecs
+        Next
+        Return retVal
+    End Function
+
     Public Sub ReRootMainMethodTree(MainTree As TreeListView, newRoot As MethodNode)
         MainTree.Nodes.Clear()
         MainTree.Nodes.Add(newRoot.ParentProcessSnapshot.GenerateReRootedTreeView(newRoot))
@@ -96,15 +115,24 @@ Public Class SnapshotManager
         Next
     End Sub
 
-    Public Function FindMethodNodes(methodName As String, Optional guids As List(Of String) = Nothing) As List(Of MethodNode)
+    Public Function FindMethodNodes(methodName As String, IsRegex As Boolean, Optional guids As List(Of String) = Nothing) As List(Of MethodNode)
         Dim retVal As New List(Of MethodNode)
         For Each snap As ProcessSnapshotDescriptor In AnalysisSnapshots.results
             If IsNothing(guids) Then
-                retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodes(methodName))
+                If IsRegex Then
+                    retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodesRegex(methodName))
+                Else
+                    retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodes(methodName))
+                End If
             ElseIf guids.Contains(snap.requestGUID) Then
-                retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodes(methodName))
+                If IsRegex Then
+                    retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodesRegex(methodName))
+                Else
+                    retVal.AddRange(snap.ProcessSnapshotDetails.FindMethodNodes(methodName))
+                End If
             End If
         Next
+        retVal.Sort(AddressOf MethodNode.CompareByTotalTime)
         Return retVal
     End Function
 
@@ -113,6 +141,7 @@ Public Class SnapshotManager
         For Each snap As ProcessSnapshotDescriptor In AnalysisSnapshots.results
             retVal.AddRange(snap.ProcessSnapshotDetails.FindSlowMethods(criteria))
         Next
+        retVal.Sort(AddressOf MethodNode.CompareByTotalTime)
         Return retVal
     End Function
 
@@ -209,4 +238,12 @@ Public Class ProcessSnapshotList
             resultDictionary.Add(snap.requestGUID, snap)
         End If
     End Sub
+End Class
+
+Public Class SnapshotsStatistics
+    Public Property NumberOfSnapshots As Integer
+    Public Property TotalExeTime As Integer
+    Public Overrides Function ToString() As String
+        Return NumberOfSnapshots.ToString() + " Snapshots" + vbCrLf + TotalExeTime.ToString() + " Total Time"
+    End Function
 End Class
