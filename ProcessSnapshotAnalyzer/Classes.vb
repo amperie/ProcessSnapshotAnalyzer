@@ -80,12 +80,14 @@ Public Class MethodSummary
     Public Property TotalTime As Integer = 0
     Public Property TotalSelfTime As Integer = 0
     Public Property TotalTimeStdDev As Double = 0
+    Public Property NameWithLineNumber As String
 
     Public Shared Function SummarizeMethodList(methods As List(Of MethodNode)) As MethodSummary
         Dim retVal As New MethodSummary
         If methods.Count = 0 Then Return retVal
         retVal.className = methods(0).className
         retVal.methodName = methods(0).methodName
+        retVal.NameWithLineNumber = methods(0).name + ":" + methods(0).lineNumber.ToString()
 
         For Each method As MethodNode In methods
             retVal.CallCount += 1
@@ -110,7 +112,7 @@ Public Class MethodSummary
     End Function
 
     Public Overrides Function ToString() As String
-        Return "Method: " + className + "::" + methodName + vbCrLf +
+        Return "Method: " + NameWithLineNumber + vbCrLf +
             "CallCount: " + CallCount.ToString() + vbCrLf +
             "TotalTime: " + TotalTime.ToString() + vbCrLf +
             "AvgTotalTime: " + AvgTotalTime.ToString() + vbCrLf +
@@ -269,18 +271,19 @@ Public Class ProcessSnapshot
         Return retVal
     End Function
 
-    Public Function FindMethodNodes(className As String, methodName As String) As List(Of MethodNode)
-        Dim key As String = GenerateClassMethodName(className, methodName)
-        Return FindMethodNodes(key)
-    End Function
+    'Public Function FindMethodNodes(className As String, methodName As String) As List(Of MethodNode)
+    '    Dim key As String = GenerateClassMethodName(className, methodName)
+    '    Return FindMethodNodes(key)
+    'End Function
 
     Private Function GenerateClassMethodName(node As MethodNode) As String
-        Return GenerateClassMethodName(node.className, node.methodName)
+        Return node.name + ":" + node.lineNumber.ToString()
+        'Return GenerateClassMethodName(node.className, node.methodName)
     End Function
 
-    Private Function GenerateClassMethodName(className As String, methodName As String) As String
-        Return className + "::" + methodName
-    End Function
+    'Private Function GenerateClassMethodName(className As String, methodName As String) As String
+    '    Return className + "::" + methodName
+    'End Function
 
     Public Function FindSlowMethods(criteria As MethodSearchCriteria) As List(Of MethodNode)
 

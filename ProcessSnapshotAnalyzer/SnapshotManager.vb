@@ -152,22 +152,6 @@ Public Class SnapshotManager
         Return dt
     End Function
 
-    Public Function test()
-        Dim c As New ProcessSnapshotSearchCriteria
-        cClient.Authenticate()
-        c.firstInChain = False
-        c.rangeSpecifier = New RangeSpecifier("BEFORE_NOW", 20160)
-        c.applicationIds = New List(Of Integer)
-        c.applicationIds.Add(5196)
-        c.applicationComponentIds = New List(Of Integer)
-        c.applicationComponentIds.Add(14314)
-        c.maxRows = 5
-        'MsgBox(c.toJSON())
-        'MsgBox(cClient.GetProcessSnapshotListAsJSON(c))
-        Dim res As ProcessSnapshotList = cClient.GetProcessSnapshotList(c)
-        Dim s As ProcessSnapshot = cClient.GetProcessSnapshot(res.results(0))
-    End Function
-
 End Class
 
 

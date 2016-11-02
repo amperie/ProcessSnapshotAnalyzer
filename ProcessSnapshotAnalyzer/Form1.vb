@@ -177,12 +177,6 @@ Public Class Form1
         MsgBox(sM.IsAuthenticated)
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs)
-        Dim s As String = "lib::logCalEvent"
-        Dim match As Match = Regex.Match(s, "@*log*", RegexOptions.IgnoreCase)
-        MsgBox(match.Success.ToString())
-    End Sub
-
     Private Sub tabMain_Resize(sender As Object, e As EventArgs) Handles tabMain.Resize
         lstMethods.Width = tabMain.Size.Width - 20
     End Sub
