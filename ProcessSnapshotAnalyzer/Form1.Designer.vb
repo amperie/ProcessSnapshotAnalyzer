@@ -47,6 +47,7 @@ Partial Class Form1
         Me.Label4 = New System.Windows.Forms.Label()
         Me.tabMain = New System.Windows.Forms.TabControl()
         Me.tabMethodGraph = New System.Windows.Forms.TabPage()
+        Me.txtSnapSummary = New System.Windows.Forms.TextBox()
         Me.chkRegex = New System.Windows.Forms.CheckBox()
         Me.tabSnapshotManager = New System.Windows.Forms.TabPage()
         Me.txtExeTime = New System.Windows.Forms.TextBox()
@@ -83,7 +84,6 @@ Partial Class Form1
         Me.txtUsername = New System.Windows.Forms.TextBox()
         Me.txtPassword = New System.Windows.Forms.TextBox()
         Me.lblConnected = New System.Windows.Forms.LinkLabel()
-        Me.txtSnapSummary = New System.Windows.Forms.TextBox()
         Me.tabMain.SuspendLayout()
         Me.tabMethodGraph.SuspendLayout()
         Me.tabSnapshotManager.SuspendLayout()
@@ -92,9 +92,6 @@ Partial Class Form1
         '
         'lstMethods
         '
-        Me.lstMethods.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstMethods.Columns.AddRange(New WinControls.ListView.ContainerColumnHeader() {Me.className, Me.methodName, Me.SelfTime, Me.TotalTime, Me.ID})
         Me.lstMethods.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.lstMethods.Location = New System.Drawing.Point(3, 6)
@@ -273,13 +270,15 @@ Partial Class Form1
         '
         'tabMain
         '
+        Me.tabMain.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.tabMain.Controls.Add(Me.tabMethodGraph)
         Me.tabMain.Controls.Add(Me.tabSnapshotManager)
         Me.tabMain.Controls.Add(Me.tabSettings)
         Me.tabMain.Location = New System.Drawing.Point(8, 12)
         Me.tabMain.Name = "tabMain"
         Me.tabMain.SelectedIndex = 0
-        Me.tabMain.Size = New System.Drawing.Size(968, 1011)
+        Me.tabMain.Size = New System.Drawing.Size(968, 865)
         Me.tabMain.TabIndex = 21
         '
         'tabMethodGraph
@@ -306,10 +305,18 @@ Partial Class Form1
         Me.tabMethodGraph.Location = New System.Drawing.Point(4, 22)
         Me.tabMethodGraph.Name = "tabMethodGraph"
         Me.tabMethodGraph.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMethodGraph.Size = New System.Drawing.Size(960, 985)
+        Me.tabMethodGraph.Size = New System.Drawing.Size(960, 839)
         Me.tabMethodGraph.TabIndex = 0
         Me.tabMethodGraph.Text = "Method Graph"
         Me.tabMethodGraph.UseVisualStyleBackColor = True
+        '
+        'txtSnapSummary
+        '
+        Me.txtSnapSummary.Location = New System.Drawing.Point(817, 702)
+        Me.txtSnapSummary.Multiline = True
+        Me.txtSnapSummary.Name = "txtSnapSummary"
+        Me.txtSnapSummary.Size = New System.Drawing.Size(137, 133)
+        Me.txtSnapSummary.TabIndex = 21
         '
         'chkRegex
         '
@@ -345,7 +352,7 @@ Partial Class Form1
         Me.tabSnapshotManager.Location = New System.Drawing.Point(4, 22)
         Me.tabSnapshotManager.Name = "tabSnapshotManager"
         Me.tabSnapshotManager.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSnapshotManager.Size = New System.Drawing.Size(960, 985)
+        Me.tabSnapshotManager.Size = New System.Drawing.Size(960, 839)
         Me.tabSnapshotManager.TabIndex = 1
         Me.tabSnapshotManager.Text = "Snapshot Manager"
         Me.tabSnapshotManager.UseVisualStyleBackColor = True
@@ -627,14 +634,6 @@ Partial Class Form1
         Me.lblConnected.TabIndex = 27
         Me.lblConnected.TabStop = True
         Me.lblConnected.Text = "Not Connected"
-        '
-        'txtSnapSummary
-        '
-        Me.txtSnapSummary.Location = New System.Drawing.Point(817, 702)
-        Me.txtSnapSummary.Multiline = True
-        Me.txtSnapSummary.Name = "txtSnapSummary"
-        Me.txtSnapSummary.Size = New System.Drawing.Size(137, 133)
-        Me.txtSnapSummary.TabIndex = 21
         '
         'Form1
         '
