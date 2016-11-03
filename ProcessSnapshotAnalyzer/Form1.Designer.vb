@@ -145,7 +145,6 @@ Partial Class Form1
         Me.txtSearchMethod.Name = "txtSearchMethod"
         Me.txtSearchMethod.Size = New System.Drawing.Size(468, 20)
         Me.txtSearchMethod.TabIndex = 4
-        Me.txtSearchMethod.Text = "lib::logCalEvent"
         '
         'btnSearchMethod
         '
@@ -581,7 +580,7 @@ Partial Class Form1
         Me.tabSettings.Location = New System.Drawing.Point(4, 22)
         Me.tabSettings.Name = "tabSettings"
         Me.tabSettings.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSettings.Size = New System.Drawing.Size(960, 985)
+        Me.tabSettings.Size = New System.Drawing.Size(960, 839)
         Me.tabSettings.TabIndex = 2
         Me.tabSettings.Text = "Settings"
         Me.tabSettings.UseVisualStyleBackColor = True
